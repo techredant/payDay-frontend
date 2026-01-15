@@ -229,14 +229,15 @@ const Admin = () => {
               } ${tip.status === "won" && "border-success/50"} ${
                 tip.status === "lost" && "border-destructive/30 opacity-60"
               }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  {tip.isVip && (
+            > 
+            {tip.isVip && (
                     <span className="px-2 py-1 text-xs font-bold gradient-gold text-primary-foreground rounded">
                       VIP
                     </span>
                   )}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                 
                   <div>
                     <div className="font-semibold text-foreground">
                       {tip.homeTeam} vs {tip.awayTeam}
