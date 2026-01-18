@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const connectionString = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.t5v3p.mongodb.net/${process.env.MONGO_DB_USERNAME}?retryWrites=true&w=majority`
+const connectionString = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@payday.lebh4zm.mongodb.net/?appName=Payday`
 
 if (!connectionString) {
     throw new Error('Please define the MONGO_URL environment')
