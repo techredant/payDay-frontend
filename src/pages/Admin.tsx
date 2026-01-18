@@ -48,7 +48,7 @@ const Admin = () => {
   /* ================= FETCH TIPS ================= */
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/tip")
+    fetch("https://pay-day-backend.vercel.app/api/tip")
       .then((res) => res.json())
       .then(setTips)
       .catch(console.error);
@@ -59,7 +59,7 @@ const Admin = () => {
   const handleAddTip = async () => {
     if (!newTip.homeTeam || !newTip.awayTeam || !newTip.prediction) return;
 
-    const res = await fetch("http://localhost:5000/api/tip", {
+    const res = await fetch("https://pay-day-backend.vercel.app/api/tip", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newTip),
@@ -85,7 +85,7 @@ const Admin = () => {
   /* ================= DELETE TIP ================= */
 
   const handleDeleteTip = async (id: string) => {
-    await fetch(`http://localhost:5000/api/tip/${id}`, {
+    await fetch(`https://pay-day-backend.vercel.app/api/tip/${id}`, {
       method: "DELETE",
     });
 
@@ -99,7 +99,7 @@ const Admin = () => {
     status: "won" | "lost"
   ) => {
     const res = await fetch(
-      `http://localhost:5000/api/tip/${id}/status`,
+      `https://pay-day-backend.vercel.app/api/tip/${id}/status`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
