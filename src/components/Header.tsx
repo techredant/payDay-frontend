@@ -84,7 +84,7 @@ useEffect(() => {
           )}
 
           {/* Admin button */}
-          {currentUser && profiles.some((p) => p.name === "Gerald sang" && p.email === currentUser.email) && (
+          {currentUser && profiles.some((p) => p.name === "Abraham" && p.email === currentUser.email) && (
             <Link to="/admin">
               <Button variant="ghost" size="sm">
                 Add tip
