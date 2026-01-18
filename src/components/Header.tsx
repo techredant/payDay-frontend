@@ -87,7 +87,7 @@ useEffect(() => {
           {currentUser && profiles.some((p) => p.email === "abrahamngetich907@gmail.com" && p.email === currentUser.email) && (
             <Link to="/admin">
               <Button variant="ghost" size="sm">
-                Add tip
+                Admin
               </Button>
             </Link>
           )}
