@@ -33,7 +33,6 @@ useEffect(() => {
       .catch((err) => console.error(err));
   }, []);
 
-  console.log("Current User:", currentUser);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">

@@ -101,6 +101,9 @@ const handleLogin = async (data: LoginFormData) => {
       return;
     }
 
+      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("token", result.token);
+
     toast.success("Account created! 🌟");
     onClose();
     signupForm.reset();

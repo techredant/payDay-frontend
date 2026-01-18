@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { 
-  Plus, 
-  Trash2, 
-  Edit, 
-  Trophy, 
-  TrendingUp, 
-  Users, 
-  DollarSign,
+import { useEffect, useState } from "react";
+import {
+  Plus,
+  Trash2,
+  Trophy,
+  TrendingUp,
+  Users,
   ArrowLeft,
   Check,
-  X
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 
+/* ================= TYPES ================= */
+
 interface Tip {
-  id: number;
+  _id: string; // MongoDB ID
   homeTeam: string;
   awayTeam: string;
   league: string;
@@ -28,35 +28,12 @@ interface Tip {
   status: "pending" | "won" | "lost";
 }
 
-const Admin = () => {
-  const [tips, setTips] = useState<Tip[]>([
-    {
-      id: 1,
-      homeTeam: "Arsenal",
-      awayTeam: "Chelsea",
-      league: "Premier League",
-      prediction: "Over 2.5 Goals",
-      odds: "1.85",
-      confidence: 78,
-      time: "Today, 17:30",
-      isVip: false,
-      status: "pending",
-    },
-    {
-      id: 2,
-      homeTeam: "Man United",
-      awayTeam: "Liverpool",
-      league: "Premier League",
-      prediction: "BTTS - Yes",
-      odds: "2.10",
-      confidence: 92,
-      time: "Today, 16:00",
-      isVip: true,
-      status: "pending",
-    },
-  ]);
+/* ================= COMPONENT ================= */
 
+const Admin = () => {
+  const [tips, setTips] = useState<Tip[]>([]);
   const [isAdding, setIsAdding] = useState(false);
+
   const [newTip, setNewTip] = useState({
     homeTeam: "",
     awayTeam: "",
@@ -68,17 +45,29 @@ const Admin = () => {
     isVip: false,
   });
 
-  const handleAddTip = () => {
+  /* ================= FETCH TIPS ================= */
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/tip")
+      .then((res) => res.json())
+      .then(setTips)
+      .catch(console.error);
+  }, []);
+
+  /* ================= ADD TIP ================= */
+
+  const handleAddTip = async () => {
     if (!newTip.homeTeam || !newTip.awayTeam || !newTip.prediction) return;
-    
-    setTips([
-      ...tips,
-      {
-        ...newTip,
-        id: Date.now(),
-        status: "pending",
-      },
-    ]);
+
+    const res = await fetch("http://localhost:5000/api/tip", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTip),
+    });
+
+    const saved: Tip = await res.json();
+    setTips((prev) => [saved, ...prev]);
+
     setNewTip({
       homeTeam: "",
       awayTeam: "",
@@ -89,29 +78,69 @@ const Admin = () => {
       time: "",
       isVip: false,
     });
+
     setIsAdding(false);
   };
 
-  const handleDeleteTip = (id: number) => {
-    setTips(tips.filter((tip) => tip.id !== id));
+  /* ================= DELETE TIP ================= */
+
+  const handleDeleteTip = async (id: string) => {
+    await fetch(`http://localhost:5000/api/tip/${id}`, {
+      method: "DELETE",
+    });
+
+    setTips((prev) => prev.filter((t) => t._id !== id));
   };
 
-  const handleUpdateStatus = (id: number, status: "won" | "lost") => {
-    setTips(
-      tips.map((tip) => (tip.id === id ? { ...tip, status } : tip))
+  /* ================= UPDATE STATUS ================= */
+
+  const handleUpdateStatus = async (
+    id: string,
+    status: "won" | "lost"
+  ) => {
+    const res = await fetch(
+      `http://localhost:5000/api/tip/${id}/status`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      }
+    );
+
+    const updated: Tip = await res.json();
+
+    setTips((prev) =>
+      prev.map((t) => (t._id === updated._id ? updated : t))
     );
   };
 
+  /* ================= STATS ================= */
+
   const stats = [
     { label: "Total Tips", value: tips.length, icon: TrendingUp },
-    { label: "VIP Tips", value: tips.filter((t) => t.isVip).length, icon: Trophy },
-    { label: "Won", value: tips.filter((t) => t.status === "won").length, icon: Check },
-    { label: "Pending", value: tips.filter((t) => t.status === "pending").length, icon: Users },
+    {
+      label: "VIP Tips",
+      value: tips.filter((t) => t.isVip).length,
+      icon: Trophy,
+    },
+    {
+      label: "Won",
+      value: tips.filter((t) => t.status === "won").length,
+      icon: Check,
+    },
+    {
+      label: "Pending",
+      value: tips.filter((t) => t.status === "pending").length,
+      icon: Users,
+    },
   ];
+
+  /* ================= UI ================= */
 
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
@@ -121,12 +150,11 @@ const Admin = () => {
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-heading font-bold text-foreground">
-                Admin Panel
-              </h1>
-              <p className="text-muted-foreground">Manage your betting tips</p>
+              <h1 className="text-3xl font-bold">Admin Panel</h1>
+              <p className="text-muted-foreground">Manage betting tips</p>
             </div>
           </div>
+
           <Button variant="vip" onClick={() => setIsAdding(true)}>
             <Plus className="w-4 h-4" />
             Add Tip
@@ -135,79 +163,60 @@ const Admin = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
+          {stats.map((stat, i) => (
             <div
-              key={index}
-              className="p-4 rounded-xl gradient-card border border-border/50 shadow-card"
+              key={i}
+              className="p-4 rounded-xl gradient-card border shadow-card"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <stat.icon className="w-5 h-5 text-primary" />
-                </div>
+                <stat.icon className="w-5 h-5 text-primary" />
                 <div>
-                  <div className="text-2xl font-heading font-bold text-foreground">
-                    {stat.value}
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
                   </div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Add Tip Form */}
+        {/* Add Tip */}
         {isAdding && (
-          <div className="mb-8 p-6 rounded-xl gradient-card border border-primary/30 shadow-gold">
-            <h3 className="text-lg font-heading font-bold text-foreground mb-4">
-              Add New Tip
-            </h3>
+          <div className="mb-8 p-6 rounded-xl gradient-card border">
+            <h3 className="text-lg font-bold mb-4">Add New Tip</h3>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-              <Input
-                placeholder="Home Team"
-                value={newTip.homeTeam}
-                onChange={(e) => setNewTip({ ...newTip, homeTeam: e.target.value })}
-              />
-              <Input
-                placeholder="Away Team"
-                value={newTip.awayTeam}
-                onChange={(e) => setNewTip({ ...newTip, awayTeam: e.target.value })}
-              />
-              <Input
-                placeholder="League"
-                value={newTip.league}
-                onChange={(e) => setNewTip({ ...newTip, league: e.target.value })}
-              />
-              <Input
-                placeholder="Match Time"
-                value={newTip.time}
-                onChange={(e) => setNewTip({ ...newTip, time: e.target.value })}
-              />
-              <Input
-                placeholder="Prediction"
-                value={newTip.prediction}
-                onChange={(e) => setNewTip({ ...newTip, prediction: e.target.value })}
-              />
-              <Input
-                placeholder="Odds"
-                value={newTip.odds}
-                onChange={(e) => setNewTip({ ...newTip, odds: e.target.value })}
-              />
-              <Input
-                type="number"
-                placeholder="Confidence %"
+              <Input placeholder="Home Team" value={newTip.homeTeam}
+                onChange={(e) => setNewTip({ ...newTip, homeTeam: e.target.value })} />
+              <Input placeholder="Away Team" value={newTip.awayTeam}
+                onChange={(e) => setNewTip({ ...newTip, awayTeam: e.target.value })} />
+              <Input placeholder="League" value={newTip.league}
+                onChange={(e) => setNewTip({ ...newTip, league: e.target.value })} />
+              <Input placeholder="Time" value={newTip.time}
+                onChange={(e) => setNewTip({ ...newTip, time: e.target.value })} />
+              <Input placeholder="Prediction" value={newTip.prediction}
+                onChange={(e) => setNewTip({ ...newTip, prediction: e.target.value })} />
+              <Input placeholder="Odds" value={newTip.odds}
+                onChange={(e) => setNewTip({ ...newTip, odds: e.target.value })} />
+              <Input type="number" placeholder="Confidence"
                 value={newTip.confidence}
-                onChange={(e) => setNewTip({ ...newTip, confidence: parseInt(e.target.value) })}
-              />
-              <label className="flex items-center gap-2 text-foreground">
+                onChange={(e) =>
+                  setNewTip({ ...newTip, confidence: Number(e.target.value) })
+                } />
+
+              <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={newTip.isVip}
-                  onChange={(e) => setNewTip({ ...newTip, isVip: e.target.checked })}
-                  className="w-4 h-4 accent-primary"
+                  onChange={(e) =>
+                    setNewTip({ ...newTip, isVip: e.target.checked })
+                  }
                 />
                 VIP Tip
               </label>
             </div>
+
             <div className="flex gap-3">
               <Button onClick={handleAddTip}>Save Tip</Button>
               <Button variant="ghost" onClick={() => setIsAdding(false)}>
@@ -221,86 +230,58 @@ const Admin = () => {
         <div className="space-y-4">
           {tips.map((tip) => (
             <div
-              key={tip.id}
-              className={`p-4 rounded-xl border transition-all ${
-                tip.isVip
-                  ? "gradient-card border-primary/30"
-                  : "bg-card border-border/50"
-              } ${tip.status === "won" && "border-success/50"} ${
-                tip.status === "lost" && "border-destructive/30 opacity-60"
+              key={tip._id}
+              className={`p-4 rounded-xl border ${
+                tip.isVip ? "gradient-card border-primary" : "bg-card"
               }`}
-            > 
-            {tip.isVip && (
-                    <span className="px-2 py-1 text-xs font-bold gradient-gold text-primary-foreground rounded">
-                      VIP
-                    </span>
-                  )}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                 
-                  <div>
-                    <div className="font-semibold text-foreground">
-                      {tip.homeTeam} vs {tip.awayTeam}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {tip.league} • {tip.time}
-                    </div>
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-semibold">
+                    {tip.homeTeam} vs {tip.awayTeam}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {tip.league} • {tip.time}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
-                    <div className="font-semibold text-primary">{tip.prediction}</div>
-                    <div className="text-sm text-muted-foreground">
-                      Odds: {tip.odds} | {tip.confidence}%
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {tip.status === "pending" ? (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-success hover:text-success hover:bg-success/10"
-                          onClick={() => handleUpdateStatus(tip.id, "won")}
-                        >
-                          <Check className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => handleUpdateStatus(tip.id, "lost")}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </>
-                    ) : (
-                      <span
-                        className={`px-2 py-1 text-xs font-bold rounded ${
-                          tip.status === "won"
-                            ? "bg-success/20 text-success"
-                            : "bg-destructive/20 text-destructive"
-                        }`}
+                <div className="flex items-center gap-2">
+                  {tip.status === "pending" ? (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleUpdateStatus(tip._id, "won")}
                       >
-                        {tip.status.toUpperCase()}
-                      </span>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => handleDeleteTip(tip.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                        <Check />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleUpdateStatus(tip._id, "lost")}
+                      >
+                        <X />
+                      </Button>
+                    </>
+                  ) : (
+                    <span className="text-xs font-bold">
+                      {tip.status.toUpperCase()}
+                    </span>
+                  )}
+
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleDeleteTip(tip._id)}
+                  >
+                    <Trash2 />
+                  </Button>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
       </div>
     </div>
   );
