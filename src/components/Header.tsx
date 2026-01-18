@@ -64,7 +64,7 @@ useEffect(() => {
                 onLogin={(user: Profile) => {
                   setCurrentUser(user);
                   setIsLoginOpen(false);
-                  toast.success(`Welcome back, ${user.name}! 🎉`);
+                  toast.success(`Welcome back... 🎉`);
                 }}
               />
             </>
