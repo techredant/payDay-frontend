@@ -59,7 +59,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 const handleLogin = async (data: LoginFormData) => {
   setIsLoading(true);
 
-  const res = await fetch("https://pay-day-one.vercel.app/api/auth/login", {
+  const res = await fetch("https://pay-day-6rjd.vercel.app/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -87,7 +87,7 @@ const handleLogin = async (data: LoginFormData) => {
   setIsLoading(true);
 
   try {
-    const res = await fetch("https://pay-day-one.vercel.app/api/auth/signup", {
+    const res = await fetch("https://pay-day-6rjd.vercel.app/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
