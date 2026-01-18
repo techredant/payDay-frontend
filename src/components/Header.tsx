@@ -54,7 +54,7 @@ useEffect(() => {
               {/* Sign In button */}
               <Button onClick={() => setIsLoginOpen(true)} variant="ghost">
                 <LogIn className="h-2 w-4" />
-                Sign In
+                Login
               </Button>
 
               {/* Login modal */}
