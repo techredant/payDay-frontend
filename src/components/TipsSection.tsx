@@ -36,7 +36,7 @@ const TipsSection = () => {
 useEffect(() => {
   const token = localStorage.getItem("token");
 
-  fetch("http://localhost:5000/api/tip", {
+  fetch("https://pay-day-one.vercel.app/api/tip", {
     headers: {
       Authorization: token ? `Bearer ${token}` : "",
     },
