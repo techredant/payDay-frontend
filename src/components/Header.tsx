@@ -1,7 +1,6 @@
 import { Trophy, Crown } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import { ModeToggle } from "./mode-toggle";
 
 const Header = () => {
   return (
@@ -31,7 +30,7 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-3">
-          <ModeToggle />
+        
           <Link to="/admin">
             <Button variant="ghost" size="sm">
               Admin
