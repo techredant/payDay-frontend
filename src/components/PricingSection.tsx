@@ -30,7 +30,7 @@ const plans = [
     popular: true,
   },
   {
-    name: "Lifetime VIP",
+    name: "1 Year VIP",
     price: "KES 5,000",
     period: "one-time",
     features: [
