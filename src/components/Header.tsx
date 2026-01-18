@@ -96,7 +96,7 @@ useEffect(() => {
           <a href="#pricing">
             <Button variant="vip" size="sm">
               <Crown className="w-4 h-4" />
-              Join VIP
+               VIP
             </Button>
           </a>
         </div>
