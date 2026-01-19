@@ -1,5 +1,10 @@
 import { Lock, Check, Clock, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
+import { LoginModal } from "./LoginModal";
+import { Profile } from "./Header";
+import { toast } from "sonner";
 
 interface TipCardProps {
   homeTeam: string;
@@ -35,11 +40,20 @@ const TipCard = ({
     }
   };
 
+    // ✅ get user from localStorage
+  const [currentUser, setCurrentUser] = useState(null);
+   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) setCurrentUser(JSON.parse(user));
+  }, []);
+
   return (
     <div
       className={cn(
         "relative rounded-xl p-5 border transition-all duration-300 hover:scale-[1.02]",
-        isVip
+        isVip 
           ? "gradient-card border-primary/30 shadow-gold"
           : "bg-card border-border/50 shadow-card",
         status === "won" && "border-success/50"
@@ -52,7 +66,7 @@ const TipCard = ({
         </div>
       )}
 
-      <div className="flex items-start justify-between mb-4">
+      <div className={cn("flex items-start justify-between mb-4", !currentUser && "blur-vip select-none")}>
         <div>
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
             {league}
@@ -64,7 +78,7 @@ const TipCard = ({
         </div>
       </div>
 
-      <div className={cn("relative", isVip && "blur-vip select-none")}>
+      <div className={cn("relative", !currentUser && "blur-vip select-none")}>
         <div className="space-y-2 mb-4">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-foreground">{homeTeam}</span>
@@ -106,6 +120,27 @@ const TipCard = ({
             <a href="#pricing" className="text-xs text-primary hover:underline">
               Unlock Now
             </a>
+          </div>
+        </div>
+      )}
+
+        {!currentUser && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-xl backdrop-blur-sm">
+          <div className="text-center">
+            <Lock className="w-8 h-8 text-primary mx-auto mb-2" />
+            <Button onClick={() => setIsLoginOpen(true)} variant="ghost">
+              Login to view tips
+            </Button>
+            {/* Login modal */}
+              <LoginModal
+                isOpen={isLoginOpen}
+                onClose={() => setIsLoginOpen(false)}
+                onLogin={(user: Profile) => {
+                  setCurrentUser(user);
+                  setIsLoginOpen(false);
+                  toast.success(`Welcome back... 🎉`);
+                }}
+              />
           </div>
         </div>
       )}

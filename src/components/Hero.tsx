@@ -2,6 +2,7 @@ import { TrendingUp, Star, Zap } from "lucide-react";
 import { Button } from "./ui/button";
 
 const Hero = () => {
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background effects */}

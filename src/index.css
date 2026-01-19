@@ -123,6 +123,7 @@ html {
     pointer-events: none;
   }
 
+
   .glass {
     background: hsl(220 18% 12% / 0.8);
     backdrop-filter: blur(12px);

@@ -15,7 +15,6 @@ interface TipCardProps {
   confidence: number;
   time: string;
   isVip?: boolean;
-  canViewVip?: boolean;
   status?: "pending" | "won" | "lost";
 }
 
@@ -76,7 +75,7 @@ useEffect(() => {
             </h2>
           </div>
 
-          {freeTips.length === 0 ? (
+   {freeTips.length === 0 ? (
             <p className="text-muted-foreground">No free tips available.</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -85,6 +84,9 @@ useEffect(() => {
               ))}
             </div>
           )}
+ 
+
+         
         </div>
 
         {/* VIP TIPS */}
@@ -111,7 +113,6 @@ useEffect(() => {
                   key={index}
                   {...tip}
                   isVip
-                  canViewVip={canViewVip}
                 />
               ))}
             </div>

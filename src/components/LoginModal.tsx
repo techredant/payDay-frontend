@@ -88,8 +88,6 @@ const handleLogin = async (data: LoginFormData) => {
 };
 
 
-
-
  const handleSignup = async (data: SignupFormData) => {
   setIsLoading(true);
 
