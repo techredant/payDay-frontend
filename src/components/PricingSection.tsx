@@ -1,5 +1,6 @@
 import { Check, Crown, Smartphone, MessageCircle } from "lucide-react";
 import { Button } from "./ui/button";
+import { useState } from "react";
 
 const plans = [
   {
@@ -46,11 +47,25 @@ const plans = [
 ];
 
 const PricingSection = () => {
-  const handlePayment = (plan: string) => {
-    const message = encodeURIComponent(
-      `Hi! I want to subscribe to the ${plan} plan on Payday Picks. Please send me the M-Pesa payment details.`
-    );
-    window.open(`https://wa.me/+254711871225?text=${message}`, "_blank");
+    const [loading, setLoading] = useState(false);
+     const handlePayment = async (plan: any) => {
+    const phone = prompt("Enter M-Pesa number (07XXXXXXXX)");
+    if (!phone) return;
+
+    setLoading(true);
+
+    await fetch("https://pay-day-backend.vercel.app/api/mpesa/stk-push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone,
+        plan: plan.name,
+        amount: plan.amount,
+        userId: "logged-in-user-id",
+      }),
+    });
+    alert("STK Push sent. Enter your PIN.");
+    setLoading(false);
   };
 
   return (
@@ -108,9 +123,9 @@ const PricingSection = () => {
               <Button
                 variant={plan.popular ? "vip" : "outline"}
                 className="w-full"
-                onClick={() => handlePayment(plan.name)}
+                onClick={() => handlePayment(plan)}
               >
-                Subscribe Now
+                {loading ? "Processing..." : "Subscribe Now"}
               </Button>
             </div>
           ))}
