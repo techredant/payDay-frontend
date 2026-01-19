@@ -44,8 +44,12 @@ useEffect(() => {
   })
     .then((res) => res.json())
     .then((data: TipCardProps[]) => {
-      const free = data.filter((t) => !t.isVip);
-      const vip = data.filter((t) => t.isVip);
+      const free = data.sort(
+          (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+        ).filter((t) => !t.isVip); 
+      const vip =  data.sort(
+          (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+        ).filter((t) => t.isVip);
 
       setFreeTips(free);
       setVipTips(vip);

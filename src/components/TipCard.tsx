@@ -68,7 +68,11 @@ const TipCard = ({
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
             {league}
           </span>
-          <div className="text-xs text-muted-foreground mt-1">{time}</div>
+          <div className="text-xs text-muted-foreground mt-1">{new Date(time).toLocaleString("en-KE", {
+  dateStyle: "medium",
+  timeStyle: "short",
+})}
+</div>
         </div>
         <div className="flex items-center gap-2">
           {getStatusIcon()}
@@ -132,7 +136,7 @@ const TipCard = ({
               <LoginModal
                 isOpen={isLoginOpen}
                 onClose={() => setIsLoginOpen(false)}
-                onLogin={(user: Profile) => {
+                onLogin={(user) => {
                   setIsLoginOpen(false);
                   toast.success(`Welcome back... 🎉`);
                 }}

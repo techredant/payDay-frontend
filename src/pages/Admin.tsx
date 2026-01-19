@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import { toast } from "@/components/ui/sonner";
 
 /* ================= TYPES ================= */
 
@@ -24,6 +25,7 @@ interface Tip {
   odds: string;
   confidence: number;
   time: string;
+  date: string;
   isVip: boolean;
   status: "pending" | "won" | "lost";
 }
@@ -42,6 +44,7 @@ const Admin = () => {
     odds: "",
     confidence: 75,
     time: "",
+    date: "",
     isVip: false,
   });
 
@@ -55,32 +58,33 @@ const Admin = () => {
   }, []);
 
   /* ================= ADD TIP ================= */
+const handleAddTip = async () => {
+  if (!newTip.date || !newTip.time) {
+    toast.error("Please select date and time");
+    return;
+  }
 
-  const handleAddTip = async () => {
-    if (!newTip.homeTeam || !newTip.awayTeam || !newTip.prediction) return;
+  const isoTime = new Date(
+    `${newTip.date}T${newTip.time}`
+  ).toISOString();
 
-    const res = await fetch("https://pay-day-backend.vercel.app/api/tip", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newTip),
-    });
-
-    const saved: Tip = await res.json();
-    setTips((prev) => [saved, ...prev]);
-
-    setNewTip({
-      homeTeam: "",
-      awayTeam: "",
-      league: "",
-      prediction: "",
-      odds: "",
-      confidence: 75,
-      time: "",
-      isVip: false,
-    });
-
-    setIsAdding(false);
+  const tipToSave = {
+    ...newTip,
+    time: isoTime, // ✅ ISO string
   };
+
+  const res = await fetch("https://pay-day-backend.vercel.app/api/tip", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(tipToSave),
+  });
+
+  const saved = await res.json();
+  setTips((prev) => [saved, ...prev]);
+  setIsAdding(false);
+};
+
+
 
   /* ================= DELETE TIP ================= */
 
@@ -193,6 +197,14 @@ const Admin = () => {
                 onChange={(e) => setNewTip({ ...newTip, awayTeam: e.target.value })} />
               <Input placeholder="League" value={newTip.league}
                 onChange={(e) => setNewTip({ ...newTip, league: e.target.value })} />
+                <Input
+  type="date"
+  value={newTip.date}
+  onChange={(e) =>
+    setNewTip({ ...newTip, date: e.target.value })
+  }
+/>
+
               <Input placeholder="Time" value={newTip.time}
                 onChange={(e) => setNewTip({ ...newTip, time: e.target.value })} />
               <Input placeholder="Prediction" value={newTip.prediction}
