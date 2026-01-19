@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { LoginModal } from "./LoginModal";
 import { Profile } from "./Header";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 interface TipCardProps {
   homeTeam: string;
@@ -28,6 +29,7 @@ const TipCard = ({
   time,
   isVip = false,
   status = "pending",
+ 
 }: TipCardProps) => {
   const getStatusIcon = () => {
     switch (status) {
@@ -40,14 +42,9 @@ const TipCard = ({
     }
   };
 
-    // ✅ get user from localStorage
-  const [currentUser, setCurrentUser] = useState(null);
    const [isLoginOpen, setIsLoginOpen] = useState(false);
-  
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) setCurrentUser(JSON.parse(user));
-  }, []);
+  const { user } = useAuth();
+
 
   return (
     <div
@@ -66,7 +63,7 @@ const TipCard = ({
         </div>
       )}
 
-      <div className={cn("flex items-start justify-between mb-4", !currentUser && "blur-vip select-none")}>
+      <div className={cn("flex items-start justify-between mb-4", !user && "blur-vip select-none")}>
         <div>
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
             {league}
@@ -78,7 +75,7 @@ const TipCard = ({
         </div>
       </div>
 
-      <div className={cn("relative", !currentUser && "blur-vip select-none")}>
+      <div className={cn("relative", !user && "blur-vip select-none")}>
         <div className="space-y-2 mb-4">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-foreground">{homeTeam}</span>
@@ -124,7 +121,7 @@ const TipCard = ({
         </div>
       )}
 
-        {!currentUser && (
+        {!user && (
         <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-xl backdrop-blur-sm">
           <div className="text-center">
             <Lock className="w-8 h-8 text-primary mx-auto mb-2" />
@@ -136,7 +133,6 @@ const TipCard = ({
                 isOpen={isLoginOpen}
                 onClose={() => setIsLoginOpen(false)}
                 onLogin={(user: Profile) => {
-                  setCurrentUser(user);
                   setIsLoginOpen(false);
                   toast.success(`Welcome back... 🎉`);
                 }}

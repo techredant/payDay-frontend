@@ -3,6 +3,7 @@
 import { Flame, Crown } from "lucide-react";
 import TipCard from "./TipCard";
 import { useEffect, useState } from "react";
+import { Profile } from "./Header";
 
 interface TipCardProps {
   homeTeam: string;
@@ -16,6 +17,7 @@ interface TipCardProps {
   time: string;
   isVip?: boolean;
   status?: "pending" | "won" | "lost";
+  
 }
 
 
