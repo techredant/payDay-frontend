@@ -1,3 +1,5 @@
+// src/components/Header.tsx
+
 import { useEffect, useState } from "react";
 import { Trophy, Crown, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
@@ -14,14 +16,11 @@ export type Profile = {
 const Header = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-const [isLoading, setIsLoading] = useState(false);
 const [currentUser, setCurrentUser] = useState(null);
 
 useEffect(() => {
-  setIsLoading(true);
   const user = localStorage.getItem("user");
   if (user) setCurrentUser(JSON.parse(user));
-  setIsLoading(false);
 }, []);
 
   // fetch all profiles from backend (optional, only for admin check)
@@ -51,7 +50,7 @@ useEffect(() => {
         
         <div className="flex items-center gap-3">
 
-          {!currentUser && !isLoading ? (
+          {!currentUser  ? (
             <>
               {/* Sign In button */}
               <Button onClick={() => setIsLoginOpen(true)} variant="ghost">

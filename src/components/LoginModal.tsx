@@ -1,3 +1,5 @@
+// src/component/LoginModal.tsx
+
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -40,7 +42,8 @@ interface LoginModalProps {
   onLogin: (user: Profile) => void;
 }
 
-export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
+
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,13 +76,17 @@ const handleLogin = async (data: LoginFormData) => {
     return;
   }
 
-  // Save user to localStorage
+  // ✅ Save user
   localStorage.setItem("user", JSON.stringify(result.user));
   localStorage.setItem("token", result.token);
+
+  // ✅ THIS WAS MISSING
+  onLogin(result.user);
 
   toast.success("Welcome back!");
   onClose();
 };
+
 
 
 
@@ -103,6 +110,9 @@ const handleLogin = async (data: LoginFormData) => {
 
       localStorage.setItem("user", JSON.stringify(result.user));
       localStorage.setItem("token", result.token);
+
+      // ✅ ADD THIS
+onLogin(result.user);
 
     toast.success("Account created! 🌟");
     onClose();
