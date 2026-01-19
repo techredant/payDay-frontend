@@ -87,13 +87,13 @@ useEffect(() => {
           )}
 
           {/* Admin button */}
-          {/* {currentUser && profiles.some((p) => p.email === "abrahamngetich907@gmail.com" && p.email === currentUser.email) && ( */}
+          {currentUser && profiles.some((p) => p.email === "abrahamngetich907@gmail.com" && p.email === currentUser.email) && (
             <Link to="/admin">
               <Button variant="ghost" size="sm">
                 Admin
               </Button>
             </Link>
-          
+          )}
 
           {/* VIP button */}
           <a href="#pricing">
