@@ -25,7 +25,6 @@ interface Tip {
   odds: string;
   confidence: number;
   time: string;
-  date: string;
   isVip: boolean;
   status: "pending" | "won" | "lost";
 }
@@ -44,7 +43,6 @@ const Admin = () => {
     odds: "",
     confidence: 75,
     time: "",
-    date: "",
     isVip: false,
   });
 
@@ -59,13 +57,13 @@ const Admin = () => {
 
   /* ================= ADD TIP ================= */
 const handleAddTip = async () => {
-  if (!newTip.date || !newTip.time) {
+  if (!newTip.time) {
     toast.error("Please select date and time");
     return;
   }
 
   const isoTime = new Date(
-    `${newTip.date}T${newTip.time}`
+    `${newTip.time}`
   ).toISOString();
 
   const tipToSave = {
@@ -197,16 +195,13 @@ const handleAddTip = async () => {
                 onChange={(e) => setNewTip({ ...newTip, awayTeam: e.target.value })} />
               <Input placeholder="League" value={newTip.league}
                 onChange={(e) => setNewTip({ ...newTip, league: e.target.value })} />
-                <Input
-  type="date"
-  value={newTip.date}
-  onChange={(e) =>
-    setNewTip({ ...newTip, date: e.target.value })
-  }
-/>
-
-              <Input placeholder="Time" value={newTip.time}
-                onChange={(e) => setNewTip({ ...newTip, time: e.target.value })} />
+                              <Input
+                type="datetime-local"
+                value={newTip.time}
+                onChange={(e) =>
+                  setNewTip({ ...newTip, time: e.target.value })
+                }
+              />
               <Input placeholder="Prediction" value={newTip.prediction}
                 onChange={(e) => setNewTip({ ...newTip, prediction: e.target.value })} />
               <Input placeholder="Odds" value={newTip.odds}
@@ -253,7 +248,10 @@ const handleAddTip = async () => {
                     {tip.homeTeam} vs {tip.awayTeam}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {tip.league} • {tip.time}
+                    {tip.league} • {new Date(tip.time).toLocaleString("en-KE", {
+  dateStyle: "medium",
+  timeStyle: "short",
+})}
                   </div>
                 </div>
 
