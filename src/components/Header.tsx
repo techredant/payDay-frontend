@@ -14,12 +14,14 @@ export type Profile = {
 const Header = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-
+const [isLoading, setIsLoading] = useState(false);
 const [currentUser, setCurrentUser] = useState(null);
 
 useEffect(() => {
+  setIsLoading(true);
   const user = localStorage.getItem("user");
   if (user) setCurrentUser(JSON.parse(user));
+  setIsLoading(false);
 }, []);
 
   // fetch all profiles from backend (optional, only for admin check)
@@ -49,7 +51,7 @@ useEffect(() => {
         
         <div className="flex items-center gap-3">
 
-          {!currentUser ? (
+          {!currentUser && !isLoading ? (
             <>
               {/* Sign In button */}
               <Button onClick={() => setIsLoginOpen(true)} variant="ghost">
@@ -72,14 +74,16 @@ useEffect(() => {
             <>              
               {/* Logout button */}
               <Button
-                variant="ghost"
-                onClick={() => {
-                  setCurrentUser(null);
-                  toast.success("Logged out successfully");
-                }}
-              >
-                Logout
-              </Button>
+  variant="ghost"
+  onClick={() => {
+    localStorage.removeItem("user"); // ✅ CRITICAL
+    setCurrentUser(null);
+    toast.success("Logged out successfully");
+  }}
+>
+  Logout
+</Button>
+
             </>
           )}
 
