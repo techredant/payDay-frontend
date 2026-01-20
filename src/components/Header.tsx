@@ -25,7 +25,7 @@ useEffect(() => {
 
   // fetch all profiles from backend (optional, only for admin check)
   useEffect(() => {
-    fetch("https://pay-day-backend.vercel.app/api/Profile")
+    fetch("https://pay-day-backend.vercel.app/api/profile")
       .then((res) => res.json())
       .then((data) => {
         const list = data.profiles ?? data;
