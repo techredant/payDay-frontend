@@ -198,7 +198,7 @@ onLogin(result.user);
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
+                  Logging in...
                 </>
               ) : (
                 "Login"
