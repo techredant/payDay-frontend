@@ -5,7 +5,7 @@ import { useState } from "react";
 const plans = [
   {
     name: "Weekly VIP",
-    price: "KES 500",
+    price: "500",
     period: "per week",
     features: [
       "5-10 VIP picks daily",
@@ -18,7 +18,7 @@ const plans = [
   },
   {
     name: "Monthly VIP",
-    price: "KES 1,500",
+    price: "1500",
     period: "per month",
     features: [
       "All Weekly features",
@@ -32,7 +32,7 @@ const plans = [
   },
   {
     name: "1 Year VIP",
-    price: "KES 5,000",
+    price: "5000",
     period: "one-time",
     features: [
       "All Monthly features",
