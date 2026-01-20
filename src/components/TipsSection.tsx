@@ -8,24 +8,20 @@ interface TipCardProps {
   homeTeam: string;
   awayTeam: string;
   league: string;
-
-  prediction: string;   // ✅ optional
-  odds: string;         // ✅ optional
-
+  prediction: string;
+  odds: string;
   confidence: number;
   time: string;
   isVip?: boolean;
   status?: "pending" | "won" | "lost";
-  
 }
-
 
 const TipsSection = () => {
   const [freeTips, setFreeTips] = useState<TipCardProps[]>([]);
   const [vipTips, setVipTips] = useState<TipCardProps[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ get user from localStorage
+  // get user from localStorage
   const currentUser =
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("user") || "null")
@@ -33,30 +29,44 @@ const TipsSection = () => {
 
   const canViewVip = currentUser?.isVip || currentUser?.isAdmin;
 
-useEffect(() => {
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    const fetchTips = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-  fetch("https://pay-day-backend.vercel.app/api/tip", {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  })
-    .then((res) => res.json())
-    .then((data: TipCardProps[]) => {
-      const free = data.sort(
+        const res = await fetch(
+          "https://pay-day-backend.vercel.app/api/tip",
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          // STOP loading if response is error
+          setLoading(false);
+          console.error("API error", res.status);
+          return;
+        }
+
+        const data: TipCardProps[] = await res.json();
+
+        const sorted = data.sort(
           (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
-        ).filter((t) => !t.isVip); 
-      const vip =  data.sort(
-          (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
-        ).filter((t) => t.isVip);
+        );
 
-      setFreeTips(free);
-      setVipTips(vip);
-    })
-    .catch(console.error)
-    .finally(() => setLoading(false));
-}, []);
+        setFreeTips(sorted.filter((t) => !t.isVip));
+        setVipTips(sorted.filter((t) => t.isVip));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchTips();
+  }, []);
 
   if (loading) {
     return (
@@ -76,11 +86,11 @@ useEffect(() => {
           <div className="flex items-center gap-3 mb-8">
             <Flame className="w-8 h-8 text-primary" />
             <h2 className="text-3xl md:text-4xl font-heading font-bold">
-              Today&apos;s Free Tips
+              Today's Free Tips
             </h2>
           </div>
 
-   {freeTips.length === 0 ? (
+          {freeTips.length === 0 ? (
             <p className="text-muted-foreground">No free tips available.</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -89,7 +99,6 @@ useEffect(() => {
               ))}
             </div>
           )}
-         
         </div>
 
         {/* VIP TIPS */}
@@ -112,11 +121,7 @@ useEffect(() => {
           ) : (
             <div className="grid md:grid-cols-2 gap-6">
               {vipTips.map((tip, index) => (
-                <TipCard
-                  key={index}
-                  {...tip}
-                  isVip
-                />
+                <TipCard key={index} {...tip} isVip />
               ))}
             </div>
           )}
