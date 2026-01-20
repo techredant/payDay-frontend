@@ -57,7 +57,7 @@ const handlePayment = async (plan: any) => {
 
   try {
     const res = await fetch(
-      "https://pay-day-backend.vercel.app/api/mpesa/stk-push",
+      "https://pay-day-backend.vercel.app/api/mpesa/stkpush",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,9 +77,10 @@ const handlePayment = async (plan: any) => {
     }
 
     alert("STK Push sent. Enter your PIN.");
-  } catch (error) {
+  } catch (error) { 
+    console.error("Fetch error:", error);
     alert("Something went wrong. Please try again.");
-    console.error(error);
+   
   } finally {
     setLoadingPlan(null);
   }
