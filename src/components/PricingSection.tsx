@@ -80,9 +80,11 @@ const handlePayment = async (plan: any) => {
       }
     );
 
+    const data = await res.json();
+
     if (!res.ok) {
       const error = await res.json();
-      alert("Payment failed: " + error.message);
+      alert("Payment failed: " + data.message);
       return;
     }
 
