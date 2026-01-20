@@ -57,7 +57,7 @@ const handlePayment = async (plan: any) => {
 
   try {
     const res = await fetch(
-      "https://pay-day-backend.vercel.app/api/mpesa/stkpush",
+      "https://pay-day-backend.vercel.app/api/mpesa/stk-push",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
