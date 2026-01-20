@@ -55,16 +55,20 @@ const handlePayment = async (plan: any) => {
 
   setLoadingPlan(plan.name);
 
-  // Convert to MPESA format
+  // Convert phone to MPESA format
   const formattedPhone = phone.startsWith("07")
     ? "254" + phone.slice(1)
     : phone;
 
-  // Remove KES from amount
+  // Ensure amount is a NUMBER
   const amount = Number(plan.price);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
- 
+
+  if (!user?._id) {
+    alert("Please log in again");
+    return;
+  }
 
   try {
     const res = await fetch(
@@ -75,16 +79,15 @@ const handlePayment = async (plan: any) => {
         body: JSON.stringify({
           phone: formattedPhone,
           plan: plan.name,
-          amount, 
-          userId: user?.id,
+          amount,
+          userId: user._id, // ✅ FIXED
         }),
       }
     );
 
-    const data = await res.json();
+    const data = await res.json(); // ✅ read ONCE
 
     if (!res.ok) {
-      const error = await res.json();
       alert("Payment failed: " + data.message);
       return;
     }
@@ -97,6 +100,7 @@ const handlePayment = async (plan: any) => {
     setLoadingPlan(null);
   }
 };
+
 
  
 
