@@ -47,26 +47,43 @@ const plans = [
 ];
 
 const PricingSection = () => {
-    const [loading, setLoading] = useState(false);
-     const handlePayment = async (plan: any) => {
-    const phone = prompt("Enter M-Pesa number (07XXXXXXXX)");
-    if (!phone) return;
+    const [loadingPlan, setLoadingPlan] = useState(null);
 
-    setLoading(true);
+const handlePayment = async (plan: any) => {
+  const phone = prompt("Enter M-Pesa number (07XXXXXXXX)");
+  if (!phone) return;
 
-    await fetch("https://pay-day-backend.vercel.app/api/mpesa/stk-push", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        phone,
-        plan: plan.name,
-        amount: plan.amount,
-        userId: "logged-in-user-id",
-      }),
-    });
+ setLoadingPlan(plan.name);
+
+  try {
+    const res = await fetch(
+      "https://pay-day-backend.vercel.app/api/mpesa/stk-push",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone,
+          plan: plan.name,
+          amount: plan.price,
+          userId: "logged-in-user-id",
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      const error = await res.json();
+      alert("Payment failed: " + error.message);
+      return;
+    }
+
     alert("STK Push sent. Enter your PIN.");
-    setLoading(false);
-  };
+  } catch (error) {
+    alert("Something went wrong. Please try again.");
+    console.error(error);
+  } finally {
+    setLoadingPlan(null);
+  }
+};
 
   return (
     <section id="pricing" className="py-24 relative">
@@ -125,31 +142,11 @@ const PricingSection = () => {
                 className="w-full"
                 onClick={() => handlePayment(plan)}
               >
-                {loading ? "Processing..." : "Subscribe Now"}
+                {loadingPlan === plan.name ? "Processing..." : "Subscribe Now"}
+
               </Button>
             </div>
           ))}
-        </div>
-
-        {/* Payment Info */}
-        <div className="max-w-2xl mx-auto">
-          <div className="gradient-card rounded-2xl p-8 border border-primary/20 text-center">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Smartphone className="w-8 h-8 text-success" />
-              <h3 className="text-2xl font-heading font-bold text-foreground">
-                Pay via M-Pesa
-              </h3>
-            </div>
-            <p className="text-muted-foreground mb-6">
-              Fast, secure, and instant activation. Click subscribe and we'll send you payment details via WhatsApp.
-            </p>
-            <div className="flex items-center justify-center gap-2 text-lg">
-              <MessageCircle className="w-5 h-5 text-[#25D366]" />
-              <span className="text-foreground font-semibold">
-                WhatsApp: +254711871225
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     </section>
