@@ -53,7 +53,17 @@ const handlePayment = async (plan: any) => {
   const phone = prompt("Enter M-Pesa number (07XXXXXXXX)");
   if (!phone) return;
 
- setLoadingPlan(plan.name);
+  setLoadingPlan(plan.name);
+
+  // Convert to MPESA format
+  const formattedPhone = phone.startsWith("07")
+    ? "254" + phone.slice(1)
+    : phone;
+
+  // Remove KES from amount
+  const amount = Number(plan.price.replace("KES ", ""));
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   try {
     const res = await fetch(
@@ -62,10 +72,10 @@ const handlePayment = async (plan: any) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phone,
+          phone: formattedPhone,
           plan: plan.name,
-          amount: plan.price,
-          userId: "logged-in-user-id",
+          amount,
+          userId: user?.id,
         }),
       }
     );
@@ -77,14 +87,14 @@ const handlePayment = async (plan: any) => {
     }
 
     alert("STK Push sent. Enter your PIN.");
-  } catch (error) { 
+  } catch (error) {
     console.error("Fetch error:", error);
     alert("Something went wrong. Please try again.");
-   
   } finally {
     setLoadingPlan(null);
   }
 };
+
 
   return (
     <section id="pricing" className="py-24 relative">
