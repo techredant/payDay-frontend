@@ -1,7 +1,7 @@
 import { Check, Crown, Smartphone, MessageCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
-  import { useEffect } from "react";
+
 const plans = [
   {
     name: "Weekly VIP",
@@ -48,12 +48,6 @@ const plans = [
 
 const PricingSection = () => {
     const [loadingPlan, setLoadingPlan] = useState(null);
-  
-
-useEffect(() => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  console.log("Logged-in user:", user.id);
-}, []);
 
 const handlePayment = async (plan: any) => {
   const phone = prompt("Enter M-Pesa number (07XXXXXXXX)");
@@ -71,11 +65,6 @@ const handlePayment = async (plan: any) => {
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
  
-  if (!user._id) {
-  alert("Please login again");
-  return;
-}
-
 
   try {
     const res = await fetch(
